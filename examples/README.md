@@ -1,1 +1,0 @@
-To build the examples you need GLFW3
