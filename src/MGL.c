@@ -5,17 +5,20 @@ static const char* vshaderSource =
   "layout(location = 0) in vec3 aPos;\n"
   "layout(location = 1) in vec4 aColor;\n"
   "layout(location = 2) in vec2 aTexCoord;\n"
+  "layout(location = 3) in vec3 aNormal;\n"
   "\n"
   "uniform mat4 u_ModelView;\n"
   "uniform mat4 u_Projection;\n"
   "\n"
   "out vec4 Color;\n"
   "out vec2 TexCoord;\n"
+  "out vec3 Normal;\n"
   "\n"
   "void main() {\n"
   "  gl_Position = u_Projection * u_ModelView * vec4(aPos, 1.0);\n"
   "  Color = aColor;\n"
   "  TexCoord = aTexCoord;\n"
+  "  Normal = aNormal;\n"
   "}\n"
 ;
 
@@ -23,6 +26,7 @@ static const char* fshaderSource =
   "#version 330 core\n"
   "in vec4 Color;\n"
   "in vec2 TexCoord;\n"
+  "in vec3 Normal;\n"
   "\n"
   "uniform sampler2D u_Tex0;\n"
   "uniform bool u_UseTex;\n"
@@ -43,6 +47,7 @@ int __mgl_VertexCount;
 MGLVertex __mgl_VertexBuffer[MGL_MAX_VERTICES];
 float __mgl_CurrentColor[4];
 float __mgl_CurrentUV[2];
+float __mgl_CurrentNormals[3];
 GLuint __mgl_program;
 GLuint __mgl_VBO, __mgl_VAO;
 GLenum __mgl_DrawMode;
@@ -71,6 +76,7 @@ MGLAPI int mglInit(GLADloadproc load_proc)
   __mgl_VertexCount = 0;
   memset(__mgl_CurrentColor, '\0', sizeof(__mgl_CurrentColor));
   memset(__mgl_CurrentUV, '\0', sizeof(__mgl_CurrentUV));
+  memset(__mgl_CurrentNormals, '\0', sizeof(__mgl_CurrentNormals));
   __mgl_CurrentTexture = 0;
   
   // INIT MATRICES
@@ -115,9 +121,11 @@ MGLAPI int mglInit(GLADloadproc load_proc)
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MGLVertex), (void*)0);
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MGLVertex), (void*)(3 * sizeof(float)));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MGLVertex), (void*)(7 * sizeof(float)));
+  glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(MGLVertex), (void*)(9 * sizeof(float)));
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
   glEnableVertexAttribArray(2);
+  glEnableVertexAttribArray(3);
   return 0;
 }
 MGLAPI void mglClose(void)
@@ -216,11 +224,26 @@ MGLAPI void mglVertex3f(GLfloat x,GLfloat y,GLfloat z)
   v->a = __mgl_CurrentColor[3];
   v->u = __mgl_CurrentUV[0];
   v->v = __mgl_CurrentUV[1];
+  v->nx = __mgl_CurrentNormals[0];
+  v->ny = __mgl_CurrentNormals[1];
+  v->nz = __mgl_CurrentNormals[2];
+}
+
+MGLAPI void mglVertex3fv(const GLfloat *v)
+{
+  mglVertex3f(v[0], v[1], v[2]);
 }
 
 MGLAPI void mglVertex2f(GLfloat x,GLfloat y)
 {
   mglVertex3f(x, y, 0.0);
+}
+
+MGLAPI void mglNormal3f(GLfloat nx,GLfloat ny,GLfloat nz)
+{
+  __mgl_CurrentNormals[0] = nx;
+  __mgl_CurrentNormals[1] = ny;
+  __mgl_CurrentNormals[2] = nz;
 }
 
 MGLAPI void mglMatrixMode(GLenum mode)
@@ -236,6 +259,7 @@ MGLAPI void mglMatrixMode(GLenum mode)
       break;
   }
 }
+
 MGLAPI void mglLoadIdentity(void)
 {
   *__mgl_CurrentMatrix = mat4x4_identity();

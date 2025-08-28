@@ -1,5 +1,5 @@
 INCLUDE = -Iinclude
-LIBS = -Llib -lglfw3dll -lopengl32 -lgdi32 -lmgl
+LIBS = -Llib -lglfw3dll -lopengl32 -lgdi32 -lmgl -lm
 
 task build_mgl
 	cmd gcc -o build\MGL.o -c src\MGL.c $(INCLUDE)
@@ -11,5 +11,5 @@ task build_mgl
 	cmd ar rcs lib\libmgl.a build\MGL.o build\mat4x4.o build\displaylist.o build\transform.o build\mglu.o build\glad.o
 
 task build_tests
-	cmd gcc -o examples/legacy examples/legacy.c $(INCLUDE) $(LIBS)
-	cmd gcc -o examples/test examples/main.c $(INCLUDE) $(LIBS)
+	cmd gcc -o examples/lookat examples/lookat.c $(INCLUDE) $(LIBS)
+	cmd gcc -o examples/tris examples/tris.c $(INCLUDE) $(LIBS)
