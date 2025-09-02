@@ -35,6 +35,7 @@ To install the library and use it in your projects, use the following commands:
 ```bash
 git clone https://github.com/komodoresoft/mgl
 cd mgl
+kmak make.kmk init
 kmak make.kmk build_mgl
 ```
 
