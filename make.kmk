@@ -4,8 +4,8 @@ INCLUDE = -Iinclude
 LIBS = -Llib -lglfw3dll -lopengl32 -lgdi32 -lmgl -lm
 
 task init
-	mkdir build
-	mkdir lib
+	cmd mkdir build
+	cmd mkdir lib
 
 task build_mgl
 	cmd $(CC) -o build\MGL.o -c src\MGL.c $(INCLUDE)
@@ -19,3 +19,4 @@ task build_mgl
 task build_tests
 	cmd $(CC) -o examples/lookat examples/lookat.c $(INCLUDE) $(LIBS)
 	cmd $(CC) -o examples/tris examples/tris.c $(INCLUDE) $(LIBS)
+	cmd $(CC) -o examples/cube examples/cube.c $(INCLUDE) $(LIBS)
